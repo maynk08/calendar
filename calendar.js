@@ -1,31 +1,14 @@
 const months = [
-    'JAN',
-    'FEB',
-    'MAR',
-    'APR',
-    'MAY',
-    'JUN',
-    'JUL',
-    'AUG',
-    'SEP',
-    'OCT',
-    'NOV',
-    'DEC'
+    "JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"
 ]
 
 const days = [
-    "SUN",
-    "MON",
-    "TUE",
-    "WED",
-    "THU",
-    "FRI",
-    "SAT"
+   "SUN","MON","TUE","WED","THU","FRI","SAT"
 ];
 
 
 
-/////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////// Creating Calendar ///////////////////////////////////////////////////////////////////////////
 
 const createCalendar = (totalDaysInMonth, firstDayOfMonth) => {
   const weekArr = [false,false,false,false,false,false,false]
@@ -59,91 +42,92 @@ const firstDayOfMonth = (month,year) => new Date(year,month-1,1).getDay();
 
 
 
-const calendarFrontEnd = (calendar) =>{
+///////////////////////////////////////////////////////////////////////////// Creating Calendar InterFace /////////////////////////////////////////////////////////////////////////
 
-    const weekDaysMarkUp = days.map(
-        (day) => `<div class="day-cell">${day} </div> `
-    );
+const calendarFrontEnd = function (calendar) {
+  const weekDaysMarkup = days.map(
+    (day) => `<div class="day-cell"> ${day} </div> `
+  );
 
- //console.log(weekDaysMarkUp)
-    const weeksMarkup = calendar.map((week) => {
-        const daysMarkup = week.map((day) => {
-          return `<div id="day-${day ? day : ""}" class="day-cell"> ${
-            day ? `<span> ${day}</span>` : ""
-          } </div>`;
-        });
+  const weeksMarkup = calendar.map((week) => {
 
-       // console.log(daysMarkup)
-       
-        return `
-                      <div class="week-row">
-                          ${daysMarkup.join("")}
-                      </div>
-                  `;
-                  
-      });
-     // console.log(daysMarkUp)
-weeksMarkup.unshift(`<div class="week-row">${weekDaysMarkUp.join("")}</div`)
-//console.log(weeksMarkup)
-let htmlMarkUp = weeksMarkup.join("")
-console.log("htmlMarkUp", htmlMarkUp);
-document.getElementById("our-calendar").innerHTML = htmlMarkUp
-      
+    const daysMarkup = week.map((day) => {
+      return `<div id="day-${day ? day : ""}" class="day-cell"> ${
+        day ? `<span> ${day}</span>` : ""
+      } </div>`;
+    });
+    return `
+                  <div class="week-row">
+                      ${daysMarkup.join("")}
+                  </div>
+              `;
+  });
+  weeksMarkup.unshift(`<div class="week-row">${weekDaysMarkup.join("")}</div>`);
+  let htmlMarkup = weeksMarkup.join("");
+  document.getElementById("our-calendar").innerHTML = htmlMarkup;
+  console.log("htmlMarkup", htmlMarkup);
 };
 
-const toggleHighLightDate = (date) => {
-    const dayCell = document.getElementById(`day-${date}`)
+///////////////////////////////////////////////////////////////////////// Logic for highlighting date ///////////////////////////////////////////////////////////////////////
 
-    if(dayCell){
-        if(dayCell.className.indexOf("active")>-1){
-            dayCell.className += "day-cell"
-        } else dayCell.className += "active"
-    }
+
+const hightlighterFunction = (date) => {
+  const dayCell = document.getElementById(`day-${date}`);
+  if (dayCell) {
+    if (dayCell.className.indexOf("active") > -1) {
+      dayCell.className += "day-cell";
+    } else dayCell.className += " active";
+  }
 };
+
+/////////////////////////////////////////////////////////////////////////// Handling change ///////////////////////////////////////////////////////////////////////////////////
 
 const handleChange =(month,year) => {
+
     const daysInMonth =noOfDayInMonth(month, year);
     const firstDay = firstDayOfMonth(month, year);
     const calendar = createCalendar(daysInMonth, firstDay);
-  //  console.log("calander", calander);
+  
     calendarFrontEnd(calendar);
   };
 
-  const calendarByDefault = () => {
-    const monthOpts = months.map(
-        (month,count) => `<option value="${count+1}">${month}</option>`
-    ).join("");
-
-
-    let yearsOpts = ""
-     
-     for(let yr = 1900;yr<2050;yr++){
-        yearsOpts += `<option value="${yr}">${yr}</option>`
-     }
-
-     document.getElementById("select-year").innerHTML = yearsOpts;
-     document.getElementById("select-months").innerHTML = monthOpts;
-
-
-     const presentYear = new Date().getFullYear();
-     const presentMonth = new Date().getMonth() + 1;
-     const presentDate = new Date().getDate()
-
-     document.getElementById("select-year").value = presentYear;
-     document.getElementById("select-months").value = presentMonth;
-
-     handleChange(presentMonth, presentYear)
-     toggleHighLightDate(presentDate)
-
-     window.selectedMonth = presentMonth;
-     window.selectedYear = presentYear;
+  ///////////////////////////////////////////////////////////////////// Creating default Calendar  ////////////////////////////////////////////////////////////////////////
+  
+  
+  const defaultCalendar = () => {
+    const monthsOptionsMarkup = months
+      .map((month, index) => `<option value="${index + 1}"> ${month} </option>`)
+      .join("");
+  
+    let yearsOptions = "";
+    for (year = 1900; year < 3000; year += 1) {
+      yearsOptions += `<option value="${year}">${year}</option>`;
+    }
+    document.getElementById("select-year").innerHTML = yearsOptions;
+    document.getElementById("select-months").innerHTML = monthsOptionsMarkup;
+  
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth() + 1;
+    const currentDate = today.getDate();
+  
+    document.getElementById("select-year").value = currentYear;
+    document.getElementById("select-months").value = currentMonth;
+    handleChange(currentMonth, currentYear);
+    hightlighterFunction(currentDate);
+  
+    window.selectedMonth = currentMonth;
+    window.selectedYear = currentYear;
   };
 
-  calendarByDefault();
+  defaultCalendar();            
+
+
+  //////////////////////////////////////////////////////////////////////////// Handling different Events //////////////////////////////////////////////////////////////////////////
 
   document.getElementById("enter-btn").addEventListener("click",()=>{
     const val = document.getElementById("select-date").value;
-    if(val && !isNaN(val)) toggleHighLightDate(val)
+    if(val) hightlighterFunction(val)
     
   })
 
